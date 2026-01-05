@@ -1,7 +1,9 @@
 package services;
 
-import entities.Account;
-import entities.Customer;
+import entities.*;
+import entities.enums.AccountType;
+import entities.enums.Status;
+import exceptions.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +12,7 @@ public class AccountService {
 
     private Map<Integer, Account> accounts = new HashMap<>();
 
-    public Account createAccount(Customer c, int accId, AccountType type, Status s, Card card) {
+    public Account createAccount(Customer c, int accId, AccountType type, Status s, Card card) throws DuplicateAccountException {
         if (accounts.containsKey(accId)) {
             throw new DuplicateAccountException();
         }
@@ -22,9 +24,9 @@ public class AccountService {
     }
 
 
-    public Account deleteAccount(int accId) {
+    public Account deleteAccount(int accId) throws AccountNotFoundException {
         if (!accounts.containsKey(accId)) {
-            throw new AccountNotFounsException();
+            throw new AccountNotFoundException();
         }
 
         return accounts.remove(accId);
