@@ -1,4 +1,4 @@
-package transactions;
+package entities;
 
 import entities.enums.Result;
 import entities.enums.TransactionType;

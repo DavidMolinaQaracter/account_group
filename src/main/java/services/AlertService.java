@@ -1,4 +1,4 @@
-package transactions;
+package services;
 
 public class AlertService {
     public static void sendLongBalanceAlert(long accountId) {
