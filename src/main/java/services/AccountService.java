@@ -24,7 +24,7 @@ public class AccountService {
     }
 
 
-    public Account deleteAccount(int accId) throws AccountNotFoundException {
+    public Account closeAccount(int accId) throws AccountNotFoundException {
         if (!accounts.containsKey(accId)) {
             throw new AccountNotFoundException();
         }
