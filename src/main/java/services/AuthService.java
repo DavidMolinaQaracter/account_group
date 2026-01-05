@@ -6,12 +6,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AuthService {
-
     //<username, User(Customer + Password)>
     private HashMap<String, Customer> customers;
 
     //
-    public Customer login(String username, String password) {
+    public Customer login(String username, String password) throws AuthenticationFailedException{
         Customer result = null;
         if (customers.containsKey(username)) {
             Customer customer = customers.get(username);
@@ -29,7 +28,7 @@ public class AuthService {
         if (customers.containsKey(username)) {
             throw new DuplicateAccountException("Account already exists for the username");
         }
-        Customer customer = new Customer(name, email, password);
+        Customer customer = new Customer(name, email, password.hashCode());
         customers.put(username, customer);
         return customer;
     }

@@ -24,11 +24,11 @@ public class Main {
 
         System.out.print("Password: ");
         String password = scanner.nextLine();
-
-        if (authService.login(username, password)) {
+        try {
+            authService.login(username, password);
             showMainMenu();
-        } else {
-            System.out.println("Invalid credentials.");
+        } catch (Exception e){
+                System.out.println("Invalid credentials.");
         }
     }
 
