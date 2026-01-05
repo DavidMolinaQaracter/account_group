@@ -1,5 +1,8 @@
 package entities;
 
+import entities.enums.AccountType;
+import entities.enums.Status;
+
 import java.util.HashMap;
 import java.util.Map;
 

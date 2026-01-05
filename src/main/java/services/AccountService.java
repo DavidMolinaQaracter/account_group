@@ -35,4 +35,12 @@ public class AccountService {
     public Map<Integer, Account> getAllAccounts() {
         return new HashMap<>(accounts);
     }
+
+    public boolean checkAccountFromCustomer(Customer c, int accId) throws AccountNotFoundException {
+        if (!accounts.containsKey(accId)) {
+            throw new AccountNotFoundException();
+        }
+
+        return accounts.get(accId).getCustomer().equals(c);
+    }
 }
