@@ -86,7 +86,7 @@ public class Main {
                 case 1 -> withdraw();
                 case 2 -> transfer();
                 case 3 -> manageCard();
-                case 4 -> updateProfile();
+                case 4 -> customerService.updateCustomerInfo(customer);
                 case 5 -> manageAccount();
                 case 6 -> System.exit(0);
                 default -> System.out.println("Invalid option.");
@@ -122,12 +122,6 @@ public class Main {
         cardService.blockCard(cardNumber);
     }
 
-    private static void updateProfile() {
-        System.out.print("New email: ");
-        String email = scanner.nextLine();
-        customerService.updatePersonalInfo(email);
-    }
-
     private static void manageAccount() {
         System.out.println("1. Create account");
         System.out.println("2. Close account");
@@ -147,7 +141,7 @@ public class Main {
     private static boolean checkAccountID(int id){
         boolean result = false;
         try {
-            if (accountService.checkAccountFromCustomer(customer, from)) {
+            if (accountService.checkAccountFromCustomer(customer, id)) {
                 result = true;
             } else {
                 System.out.println("This account does not belong to the current user");
