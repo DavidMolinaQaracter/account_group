@@ -1,5 +1,7 @@
 package transactions;
 import entities.enums.Result;
+import exceptions.InsufficientFundsException;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -22,7 +24,7 @@ public class TransactionService {
     }
 
     // Metodo retirar
-    public void withdraw(Long accountId, BigDecimal amount) throws InsufficientFundsException {
+    public void withdraw(Long accountId, BigDecimal amount, boolean register) throws InsufficientFundsException {
         Account acc = accountService.getAccountsMap().get(accountId);
 
         //Lógica de dinero (Saldo o Sobregiro)
@@ -37,26 +39,38 @@ public class TransactionService {
         acc.setBalance(acc.getBalance().subtract(amount));
 
         //Registro y alerta
-        saveRecord(acc, amount, Result.SUCCESS);
+        if(register) {
+            saveRecord(acc, amount, Result.SUCCESS);
+        }
+
         if (acc.getBalance().compareTo(new BigDecimal("100")) < 0) {
             alertService.sendLowBalanceAlert(accountId);
         }
     }
 
+    // deposit
+    public void deposit (Long destId, BigDecimal amount, boolean register) throws InsufficientFundsException {
+        // Ponemos en la otra
+        Account dest = accountService.getAccountsMap().get(destId);
+        dest.setBalance(dest.getBalance().add(amount));
+
+        // Registro de la transferencia
+        if(register) {
+            Transaction tx = new Transaction(operationCounter++, amount, LocalDate.now(),
+                    accountService.getAccountsMap().get(srcId), dest, Result.SUCCESS);
+            transactionHistory.put(tx.getOperationId(), tx);
+        }
+    }
+
+
+
+
     // Metodo transferir
     public void transfer(Long srcId, Long destId, BigDecimal amount) throws InvalidTransactionException {
         try {
             // Quitamos de una cuenta (ya registra el retiro solo)
-            withdraw(srcId, amount);
-
-            // Ponemos en la otra
-            Account dest = accountService.getAccountsMap().get(destId);
-            dest.setBalance(dest.getBalance().add(amount));
-
-            // Registro de la transferencia
-            Transaction tx = new Transaction(operationCounter++, amount, LocalDate.now(),
-                    accountService.getAccountsMap().get(srcId), dest, Result.SUCCESS);
-            transactionHistory.put(tx.getOperationId(), tx);
+            withdraw(srcId, amount, false);
+            deposit(destId, amount, false);
 
         } catch (Exception e) {
             throw new InvalidTransactionException("Transfer failed");
