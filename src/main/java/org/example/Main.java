@@ -7,6 +7,8 @@ import services.*;
 import entities.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 import static entities.enums.Status.ACTIVE;
@@ -152,42 +154,88 @@ public class Main {
     }
 
     private static void manageCard() {
-        System.out.print("Card number: ");
-        String cardNumber = scanner.nextLine();
+        System.out.println("1. Add card");
+        System.out.println("2. Block card");
+        System.out.println("3. Update limit");
 
-        Card card = cardService.getCard(cardNumber);
+        int option = Integer.parseInt(scanner.nextLine());
 
-        if(card == null){
-            System.out.println("Invalid card number.");
-        } else {
-            System.out.println("Select option to perform:");
-            System.out.println("1. Block card.");
-            System.out.println("2. Update limit");
+        switch (option) {
+            case 1 -> {
+                System.out.println("Select card type:");
+                System.out.println("1. Credit card");
+                System.out.println("2. Debit card");
 
-            int i = scanner.nextInt();
-            switch (i) {
-                case 1:
-                    try {
-                        cardService.blockCard(card.getCardNumber());
-                        System.out.println("Card successfully blocked.");
-                    } catch (CardBlockedException e) {
-                        System.out.println("Card is already blocked.");
-                    }
-                    break;
-                case 2:
-                    String nLimit = scanner.nextLine();
-                    BigDecimal bg = scanner.nextBigDecimal();
+                int cardType = Integer.parseInt(scanner.nextLine());
 
-                    if(cardService.updateLimit(card.getCardNumber(), bg)) {
-                        System.out.println("Card limit successfully updated.");
-                    } else {
-                        System.out.println("Error updating card limit.");
-                    }
-                    break;
-                default:
-                    System.out.println("Invalid option.");
-                    break;
+                System.out.println("Write Card Number:");
+                String cardNumber = scanner.nextLine();
+
+                System.out.println("Write Expiration Date (YYYY-MM-DD):");
+                LocalDate expiryDate;
+                try {
+                    expiryDate = LocalDate.parse(scanner.nextLine());
+                } catch (DateTimeParseException e) {
+                    System.out.println("Invalid date format.");
+                    return;
+                }
+
+                if (cardType == 1) {
+                    System.out.println("Write Credit Card Limit:");
+                    BigDecimal limit = new BigDecimal(scanner.nextLine());
+
+                    CreditCard creditCard = new CreditCard(cardNumber, expiryDate, Status.ACTIVE, limit);
+
+                    cardService.addCard(creditCard);
+
+                } else if (cardType == 2) {
+                    DebitCard debitCard = new DebitCard(cardNumber, expiryDate, Status.ACTIVE, BigDecimal.ZERO);
+
+                    cardService.addCard(debitCard);
+                } else {
+                    System.out.println("Invalid card type.");
+                }
             }
+
+            case 2 -> {
+                System.out.println("Write card number to block:");
+                String cardNumberToBlock = scanner.nextLine();
+
+                if (cardService.getCard(cardNumberToBlock) == null) {
+                    System.out.println("Card does not exist.");
+                    return;
+                };
+
+                try {
+                    cardService.blockCard(cardNumberToBlock);
+                    System.out.println("Card blocked successfully.");
+                } catch (CardBlockedException e) {
+                    System.out.println("Card is already blocked.");
+                }
+            }
+
+            case 3 -> {
+                System.out.println("Write card number to update limit:");
+                String cardNumberToUpdateLimit = scanner.nextLine();
+
+                if (cardService.getCard(cardNumberToUpdateLimit) == null) {
+                    System.out.println("Card does not exist.");
+                    return;
+                };
+
+                System.out.println("Write new limit:");
+                BigDecimal newLimit = new BigDecimal(scanner.nextLine());
+
+                boolean updated = cardService.updateLimit(cardNumberToUpdateLimit, newLimit);
+
+                if (!updated) {
+                    System.out.println("Limit update failed.");
+                } else {
+                    System.out.println("Limit updated successfully.");
+                }
+            }
+
+            default -> System.out.println("Invalid option.");
         }
     }
 
