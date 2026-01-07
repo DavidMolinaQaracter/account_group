@@ -10,9 +10,9 @@ import java.util.Map;
 
 public class AccountService {
 
-    private Map<Integer, Account> accounts = new HashMap<>();
+    private Map<Long, Account> accounts = new HashMap<>();
 
-    public Account createAccount(Customer c, int accId, AccountType type, Status s, Card card) throws DuplicateAccountException {
+    public Account createAccount(Customer c,long accId, AccountType type, Status s, Card card) throws DuplicateAccountException {
         if (accounts.containsKey(accId)) {
             throw new DuplicateAccountException();
         }
@@ -24,7 +24,7 @@ public class AccountService {
     }
 
 
-    public Account closeAccount(int accId) throws AccountNotFoundException {
+    public Account closeAccount(long accId) throws AccountNotFoundException {
         if (!accounts.containsKey(accId)) {
             throw new AccountNotFoundException();
         }
@@ -32,11 +32,11 @@ public class AccountService {
         return accounts.remove(accId);
     }
 
-    public Map<Integer, Account> getAllAccounts() {
+    public Map<Long, Account> getAllAccounts() {
         return new HashMap<>(accounts);
     }
 
-    public boolean checkAccountFromCustomer(Customer c, int accId) throws AccountNotFoundException {
+    public boolean checkAccountFromCustomer(Customer c,long accId) throws AccountNotFoundException {
         if (!accounts.containsKey(accId)) {
             throw new AccountNotFoundException();
         }

@@ -11,12 +11,12 @@ public class Account {
 
     private Customer customer;
     private Map<String, Card> cards;
-    private int accountId;
+    private long accountId;
     private BigDecimal balance;
     private AccountType type;
     private Status status;
 
-    public Account(Customer c, int accId, AccountType type, Status s, Card card) {
+    public Account(Customer c, long accId, AccountType type, Status s, Card card) {
         this.customer = c;
         this.accountId = accId;
         this.balance = BigDecimal.valueOf(0.0);
@@ -58,7 +58,7 @@ public class Account {
         return new HashMap<>(this.cards);
     }
 
-    public int getAccountId() {
+    public long getAccountId() {
         return accountId;
     }
 
