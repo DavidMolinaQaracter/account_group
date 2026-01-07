@@ -166,7 +166,11 @@ public class Main {
             long id = Long.parseLong(scanner.nextLine());
             if (!checkAccountID(id))
                 return;
-            accountService.closeAccount(id);
+            try {
+                accountService.closeAccount(id);
+            } catch (AccountNotFoundException e){
+                System.out.println("Account not found, operation cancelled");
+            }
         }
     }
 
