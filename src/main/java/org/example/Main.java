@@ -90,7 +90,7 @@ public class Main {
             System.out.println("1. Withdraw money");
             System.out.println("2. Deposit money");
             System.out.println("3. Transfer money");
-            System.out.println("4. Block / Manage card");
+            System.out.println("4. Create / Block / Manage card");
             System.out.println("5. Update personal information");
             System.out.println("6. Create / Close account");
             System.out.println("7. View Account Details");
