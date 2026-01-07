@@ -12,6 +12,10 @@ public class AccountService {
 
     private Map<Long, Account> accounts = new HashMap<>();
 
+    public Account getAccount(Long accId) {
+        return accounts.get(accId);
+    }
+
     public Account createAccount(Customer c,long accId, AccountType type, Status s, Card card) throws DuplicateAccountException {
         if (accounts.containsKey(accId)) {
             throw new DuplicateAccountException();
