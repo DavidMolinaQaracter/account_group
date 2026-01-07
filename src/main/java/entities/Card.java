@@ -2,6 +2,7 @@ package entities;
 
 import entities.enums.Status;
 import java.time.LocalDate;
+import entities.enums.Status;
 
 public abstract class Card {
     private String cardNumber;
