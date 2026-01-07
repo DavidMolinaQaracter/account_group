@@ -3,6 +3,7 @@ package entities;
 import entities.enums.AccountType;
 import entities.enums.Status;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,14 +12,14 @@ public class Account {
     private Customer customer;
     private Map<String, Card> cards;
     private int accountId;
-    private double balance;
+    private BigDecimal balance;
     private AccountType type;
     private Status status;
 
     public Account(Customer c, int accId, AccountType type, Status s, Card card) {
         this.customer = c;
         this.accountId = accId;
-        this.balance = 0.0;
+        this.balance = BigDecimal.valueOf(0.0);
         this.type = type;
         this.status = s;
 
@@ -61,11 +62,11 @@ public class Account {
         return accountId;
     }
 
-    public double getBalance() {
+    public BigDecimal getBalance() {
         return balance;
     }
 
-    public void setBalance(double balance) {
+    public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
 
