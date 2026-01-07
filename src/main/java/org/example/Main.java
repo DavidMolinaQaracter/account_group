@@ -7,6 +7,7 @@ import services.*;
 import entities.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Scanner;
 
 import static entities.enums.Status.ACTIVE;
@@ -87,7 +88,7 @@ public class Main {
             System.out.println("1. Withdraw money");
             System.out.println("2. Deposit money");
             System.out.println("3. Transfer money");
-            System.out.println("4. Block / Manage card");
+            System.out.println("4. Create / Block / Manage card");
             System.out.println("5. Update personal information");
             System.out.println("6. Create / Close account");
             System.out.println("7. Exit");
@@ -152,42 +153,89 @@ public class Main {
     }
 
     private static void manageCard() {
-        System.out.print("Card number: ");
-        String cardNumber = scanner.nextLine();
+        System.out.print("Select option to perform:");
+        System.out.println("1. Create debit card.");
+        System.out.println("2. Create credit card.");
+        System.out.println("3. Manage card.");
+        System.out.println("4. Exit.");
 
-        Card card = cardService.getCard(cardNumber);
+        int i = scanner.nextInt();
 
-        if(card == null){
-            System.out.println("Invalid card number.");
-        } else {
-            System.out.println("Select option to perform:");
-            System.out.println("1. Block card.");
-            System.out.println("2. Update limit");
+        switch (i) {
+            case 1:
+                System.out.print("Enter debit card number to create: ");
+                String cN = scanner.nextLine();
 
-            int i = scanner.nextInt();
-            switch (i) {
-                case 1:
-                    try {
-                        cardService.blockCard(card.getCardNumber());
-                        System.out.println("Card successfully blocked.");
-                    } catch (CardBlockedException e) {
-                        System.out.println("Card is already blocked.");
+                DebitCard dCard = new DebitCard(cN, LocalDate.now().plusYears(5), ACTIVE);
+
+                if(cardService.addCard(dCard)) {
+                    System.out.println("Debit card created successfully.");
+                } else {
+                    System.out.println("Debit card creation failed.");
+                }
+
+                break;
+            case 3:
+                System.out.print("Enter card number: ");
+                String cardNumber = scanner.nextLine();
+
+                Card card = cardService.getCard(cardNumber);
+
+                if(card == null){
+                    System.out.println("Invalid card number.");
+                } else {
+                    System.out.println("Select option to perform:");
+                    System.out.println("1. Block card.");
+                    System.out.println("2. Update limit");
+
+                    int j = scanner.nextInt();
+                    switch (j) {
+                        case 1:
+                            try {
+                                cardService.blockCard(card.getCardNumber());
+                                System.out.println("Card successfully blocked.");
+                            } catch (CardBlockedException e) {
+                                System.out.println("Card is already blocked.");
+                            }
+                            break;
+                        case 2:
+                            String nLimit = scanner.nextLine();
+                            BigDecimal bg = scanner.nextBigDecimal();
+
+                            if (cardService.updateLimit(card.getCardNumber(), bg)) {
+                                System.out.println("Card limit successfully updated.");
+                            } else {
+                                System.out.println("Error updating card limit.");
+                            }
+                            break;
+                        default:
+                            System.out.println("Invalid option.");
+                            break;
                     }
-                    break;
-                case 2:
-                    String nLimit = scanner.nextLine();
-                    BigDecimal bg = scanner.nextBigDecimal();
+                }
+                break;
+            case 2:
+                System.out.print("Enter credit card number to create: ");
+                String ccN = scanner.nextLine();
 
-                    if(cardService.updateLimit(card.getCardNumber(), bg)) {
-                        System.out.println("Card limit successfully updated.");
-                    } else {
-                        System.out.println("Error updating card limit.");
-                    }
+                System.out.print("Enter limit amount: ");
+                BigDecimal bg = scanner.nextBigDecimal();
+
+                CreditCard cCard = new CreditCard(ccN, LocalDate.now().plusYears(5), ACTIVE, bg);
+
+                if(cardService.addCard(cCard)) {
+                    System.out.println("Debit card created successfully.");
+                } else {
+                    System.out.println("Debit card creation failed.");
+                }
+                break;
+                case 4:
+                    System.out.print("Returning to main menu.");
                     break;
-                default:
-                    System.out.println("Invalid option.");
-                    break;
-            }
+            default:
+                System.out.println("Invalid option.");
+                break;
+
         }
     }
 
