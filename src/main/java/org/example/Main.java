@@ -99,7 +99,7 @@ public class Main {
                 case 3 -> manageCard();
                 case 4 -> customerService.updateCustomerInfo(customer);
                 case 5 -> manageAccount();
-                case 6 -> System.exit(0);
+                case 6 -> showLoginMenu();
                 default -> System.out.println("Invalid option.");
             }
         }
