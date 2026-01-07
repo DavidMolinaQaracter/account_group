@@ -1,8 +1,10 @@
 package services;
+import entities.Account;
 import entities.enums.Result;
 import entities.Transaction;
 import entities.enums.TransactionType;
 import exceptions.InsufficientFundsException;
+import exceptions.InvalidTransactionException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -27,13 +29,14 @@ public class TransactionService {
 
     // Metodo retirar
     public void withdraw(Long accountId, BigDecimal amount, boolean register) throws InsufficientFundsException {
-        Account acc = accountService.getAccountsMap().get(accountId);
+        Account acc = accountService.getAllAccounts().get(accountId);
 
         //Lógica de dinero (Saldo o Sobregiro)
         if (acc.getBalance().compareTo(amount) < 0) {
             if (!creditService.applyOverdraft(accountId)) {
-                saveRecord(acc, amount, Result.FAILED); // Registro fallo
-                throw new InsufficientFundsException("No money");
+                Transaction t = new Transaction(operationCounter++, amount, LocalDateTime.now(), TransactionType.WITHDRAWN, accountId, Result.FAILURE);
+                transactionHistory.put(operationCounter, t);
+                throw new InsufficientFundsException();
             }
         }
 
@@ -47,14 +50,14 @@ public class TransactionService {
         }
 
         if (acc.getBalance().compareTo(new BigDecimal("100")) < 0) {
-            alertService.sendLowBalanceAlert(accountId);
+            AlertService.sendLongBalanceAlert(accountId);
         }
     }
 
     // deposit
-    public void deposit (Long destId, BigDecimal amount, boolean register) throws InsufficientFundsException {
+    public void deposit (long destId, BigDecimal amount, boolean register) throws InsufficientFundsException {
         // Ponemos en la otra
-        Account dest = accountService.getAccountsMap().get(destId);
+        Account dest = accountService.getAllAccounts().get(destId);
         dest.setBalance(dest.getBalance().add(amount));
 
         // Registro de la transferencia
@@ -75,7 +78,7 @@ public class TransactionService {
             transactionHistory.put(operationCounter, t);
 
         } catch (Exception e) {
-            throw new InvalidTransactionException("Transfer failed");
+            throw new InvalidTransactionException();
         }
     }
 }
