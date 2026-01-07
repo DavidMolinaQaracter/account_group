@@ -138,6 +138,41 @@ public class Main {
     private static void manageCard() {
         System.out.print("Card number: ");
         String cardNumber = scanner.nextLine();
+
+        Card card = cardService.getCard(cardNumber);
+
+        if(card == null){
+            System.out.println("Invalid card number.");
+        } else {
+            System.out.println("Select option to perform:");
+            System.out.println("1. Block card.");
+            System.out.println("2. Update limit");
+
+            int i = scanner.nextInt();
+            switch (i) {
+                case 1:
+                    try {
+                        cardService.blockCard(card.getCardNumber());
+                        System.out.println("Card successfully blocked.");
+                    } catch (CardBlockedException e) {
+                        System.out.println("Card is already blocked.");
+                    }
+                    break;
+                case 2:
+                    String nLimit = scanner.nextLine();
+                    BigDecimal bg = scanner.nextBigDecimal();
+
+                    if(cardService.updateLimit(card.getCardNumber(), bg)) {
+                        System.out.println("Card limit successfully updated.");
+                    } else {
+                        System.out.println("Error updating card limit.");
+                    }
+                    break;
+                default:
+                    System.out.println("Invalid option.");
+                    break;
+            }
+        }
     }
 
     private static void manageAccount() throws AccountNotFoundException {
