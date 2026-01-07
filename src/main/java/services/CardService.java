@@ -72,4 +72,11 @@ public class CardService {
 
 
     }
+
+    public Card  getCard(String cardNum) {
+        if (cards.isEmpty() || cardNum == null) {
+            return null;
+        }
+        return cards.get(cardNum);
+    }
 }
