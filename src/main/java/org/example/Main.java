@@ -17,10 +17,13 @@ public class Main {
     private static Customer customer;
     // Services (injected / created)
     private static final AuthService authService = new AuthService();
-    private static final TransactionService transactionService = new TransactionService();
     private static final CustomerService customerService = new CustomerService();
     private static final AccountService accountService = new AccountService();
+    private static final CreditService creditService = new CreditService();
     private static final CardService cardService = new CardService();
+    private static final AlertService alertService = new AlertService();
+    private static final TransactionService transactionService = new TransactionService(accountService, creditService, alertService );
+
 
     public static void main(String[] args) {
         showLoginMenu();
@@ -78,7 +81,7 @@ public class Main {
         }
     }
 
-    private static void showMainMenu() {
+    private static void showMainMenu() throws AccountNotFoundException {
         while (true) {
             System.out.println("\n=== MAIN MENU ===");
             System.out.println("1. Withdraw money");
@@ -137,7 +140,7 @@ public class Main {
         String cardNumber = scanner.nextLine();
     }
 
-    private static void manageAccount() {
+    private static void manageAccount() throws AccountNotFoundException {
         System.out.println("1. Create account");
         System.out.println("2. Close account");
         int option = Integer.parseInt(scanner.nextLine());
@@ -166,11 +169,7 @@ public class Main {
             long id = Long.parseLong(scanner.nextLine());
             if (!checkAccountID(id))
                 return;
-            try {
-                accountService.closeAccount(id);
-            } catch (AccountNotFoundException e){
-                System.out.println("Account not found, operation cancelled");
-            }
+            accountService.closeAccount(id);
         }
     }
 
