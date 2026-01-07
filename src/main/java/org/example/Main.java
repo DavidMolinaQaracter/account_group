@@ -56,14 +56,16 @@ public class Main {
     private static void register(){
         System.out.print("Username: ");
         String username = scanner.nextLine();
-        System.out.print("Name: ");
-        String name = scanner.nextLine();
+        System.out.print("First Name: ");
+        String firstName = scanner.nextLine();
+        System.out.print("Last Name: ");
+        String lastName = scanner.nextLine();
         System.out.print("Email: ");
         String email = scanner.nextLine();
         System.out.print("Password: ");
         String password = scanner.nextLine();
         try {
-            authService.register(username, name, email, password);
+            authService.register(username, firstName, lastName, email, password);
             showMainMenu();
         } catch (Exception e){
             System.out.println("Account already exists for this username.");

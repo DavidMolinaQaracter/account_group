@@ -26,11 +26,11 @@ public class AuthService {
         return result;
     }
 
-    public Customer register(String username, String name, String email, String password) throws DuplicateAccountException {
+    public Customer register(String username, String firstName, String lastName, String email, String password) throws DuplicateAccountException {
         if (customers.containsKey(username)) {
             throw new DuplicateAccountException();
         }
-        Customer customer = new Customer(name, email, password.hashCode());
+        Customer customer = new Customer(firstName, lastName, email, Integer.toString(password.hashCode()));
         customers.put(username, customer);
         return customer;
     }
