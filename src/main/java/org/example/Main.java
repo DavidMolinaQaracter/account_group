@@ -74,7 +74,7 @@ public class Main {
         System.out.print("Password: ");
         String password = scanner.nextLine();
         try {
-            authService.register(username, firstName, lastName, email, password);
+            customer = authService.register(username, firstName, lastName, email, password);
             showMainMenu();
         } catch (Exception e){
             System.out.println("Account already exists for this username.");
