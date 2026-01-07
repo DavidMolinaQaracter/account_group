@@ -6,6 +6,7 @@ import entities.Card;
 import entities.enums.Status;
 import entities.CreditCard;
 import exceptions.CardBlockedException;
+import entities.Account;
 
 public class CardService {
     HashMap<String, Card> cards;
@@ -14,9 +15,9 @@ public class CardService {
         cards = new HashMap<>();
     }
 
-    public boolean addCard(Card card) {
+    public boolean addCard(Account account, Card card) {
         // Return false if the card or the card number is null.
-        if (card == null || card.getCardNumber() == null) {
+        if (account == null || card == null || card.getCardNumber() == null) {
             return false;
         }
 
@@ -25,19 +26,25 @@ public class CardService {
             return false;
         }
 
+        // Prevent account having duplicate card numbers
+        if (account.getCards().containsKey(card.getCardNumber())) {
+            return false;
+        }
+
         cards.put(card.getCardNumber(), card);
+        account.addCard(card);
         return true;
     }
 
-    public void blockCard(String cardNum) throws CardBlockedException {
+    public void blockCard(Account account, String cardNum) throws CardBlockedException {
         // Cards list is empty or invalid card number
         if (cards.isEmpty() || cardNum == null) {
             return;
         }
 
-        Card card = cards.get(cardNum);
+        Card card = account.getCard(cardNum);
 
-        // Card with the requested card number is not in the cards hashmap.
+        // Card with the requested card number is not in the account cards hashmap.
         if (card == null) {
             return;
         }
@@ -49,15 +56,15 @@ public class CardService {
         card.setIsBlocked(Status.CLOSED);
     }
 
-    public boolean updateLimit(String cardNum, BigDecimal newLimit) {
+    public boolean updateLimit(Account account, String cardNum, BigDecimal newLimit) {
         // Cards list is empty, invalid card number or limit
         if (cards.isEmpty() || cardNum == null || newLimit.signum() <= 0) {
             return false;
         }
 
-        Card card = cards.get(cardNum);
+        Card card = account.getCard(cardNum);
 
-        // Card with the requested card number is not in the cards hashmap.
+        // Card with the requested card number is not in the account cards hashmap.
         if (card == null) {
             return false;
         }
@@ -73,10 +80,17 @@ public class CardService {
 
     }
 
-    public Card  getCard(String cardNum) {
+    public Card  getCard(Account account, String cardNum) {
+        Card card = account.getCard(cardNum);
         if (cards.isEmpty() || cardNum == null) {
             return null;
         }
-        return cards.get(cardNum);
+
+        // Card with the requested card number is not in the account cards hashmap.
+        if (card == null) {
+            return null;
+        }
+
+        return card;
     }
 }

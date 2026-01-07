@@ -164,11 +164,24 @@ public class Main {
     }
 
     private static void manageCard() {
+        System.out.print("Enter Account ID to manage cards: ");
+        Long accountId = Long.parseLong(scanner.nextLine());
+        if (!checkAccountID(accountId)) {
+            System.out.println("Invalid account, operation cancelled");
+            return;
+        }
+
+        Account account = accountService.getAccount(accountId);
+
         System.out.print("Select option to perform:");
         System.out.println("1. Create debit card.");
         System.out.println("2. Create credit card.");
         System.out.println("3. Manage card.");
         System.out.println("4. Exit.");
+
+        System.out.println("1. Add card");
+        System.out.println("2. Block card");
+        System.out.println("3. Update limit");
 
         int i = scanner.nextInt();
 
@@ -179,7 +192,7 @@ public class Main {
 
                 DebitCard dCard = new DebitCard(cN, LocalDate.now().plusYears(5), ACTIVE);
 
-                if(cardService.addCard(dCard)) {
+                if(cardService.addCard(account, dCard)) {
                     System.out.println("Debit card created successfully.");
                 } else {
                     System.out.println("Debit card creation failed.");
@@ -190,7 +203,7 @@ public class Main {
                 System.out.print("Enter card number: ");
                 String cardNumber = scanner.nextLine();
 
-                Card card = cardService.getCard(cardNumber);
+                Card card = cardService.getCard(account, cardNumber);
 
                 if(card == null){
                     System.out.println("Invalid card number.");
@@ -203,7 +216,7 @@ public class Main {
                     switch (j) {
                         case 1:
                             try {
-                                cardService.blockCard(card.getCardNumber());
+                                cardService.blockCard(account, card.getCardNumber());
                                 System.out.println("Card successfully blocked.");
                             } catch (CardBlockedException e) {
                                 System.out.println("Card is already blocked.");
@@ -212,7 +225,7 @@ public class Main {
                         case 2:
                             BigDecimal bg = scanner.nextBigDecimal();
 
-                            if (cardService.updateLimit(card.getCardNumber(), bg)) {
+                            if (cardService.updateLimit(account, card.getCardNumber(), bg)) {
                                 System.out.println("Card limit successfully updated.");
                             } else {
                                 System.out.println("Error updating card limit.");
@@ -233,7 +246,7 @@ public class Main {
 
                 CreditCard cCard = new CreditCard(ccN, LocalDate.now().plusYears(5), ACTIVE, bg);
 
-                if(cardService.addCard(cCard)) {
+                if(cardService.addCard(account, cCard)) {
                     System.out.println("Debit card created successfully.");
                 } else {
                     System.out.println("Debit card creation failed.");
