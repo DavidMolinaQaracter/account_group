@@ -147,8 +147,6 @@ public class Main {
 
                 System.out.println("Enter account number: ");
                 int id = Integer.parseInt(scanner.nextLine());
-                System.out.println("Enter account number: ");
-                int id = Integer.parseInt(scanner.nextLine());
                 System.out.println("Enter account type (default: savings)");
                 System.out.println(" 1: Savings");
                 System.out.println(" 2: Current");
