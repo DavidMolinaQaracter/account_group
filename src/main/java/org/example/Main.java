@@ -1,8 +1,10 @@
 package org.example;
 
+import exceptions.*;
 import services.*;
 import entities.*;
 
+import java.math.BigDecimal;
 import java.util.Scanner;
 
 public class Main {
@@ -96,12 +98,16 @@ public class Main {
 
     private static void withdraw() {
         System.out.print("Account ID: ");
-        String accountId = scanner.nextLine();
+        Long accountId = Long.parseLong(scanner.nextLine());
         if (!checkAccountID(accountId))
             return;
         System.out.print("Amount: ");
-        double amount = Double.parseDouble(scanner.nextLine());
-        transactionService.withdraw(accountId, amount);
+        BigDecimal amount = BigDecimal.valueOf(Long.parseLong(scanner.nextLine()));
+        try {
+            transactionService.withdraw(accountId, amount, true);
+        } catch (InsufficientFundsException e){
+            System.out.println("Insufficient funds, operation cancelled");
+        }
     }
 
     private static void transfer() {
@@ -128,7 +134,8 @@ public class Main {
         int option = Integer.parseInt(scanner.nextLine());
 
         if (option == 1) {
-            accountService.createAccount();
+            Account account = accountService.createAccount();
+            System.out.println("Created account with ID " + account.getAccountId());
         } else if (option == 2) {
             System.out.print("Account ID: ");
             String id = scanner.nextLine();
@@ -138,7 +145,7 @@ public class Main {
         }
     }
 
-    private static boolean checkAccountID(int id){
+    private static boolean checkAccountID(long id){
         boolean result = false;
         try {
             if (accountService.checkAccountFromCustomer(customer, id)) {
