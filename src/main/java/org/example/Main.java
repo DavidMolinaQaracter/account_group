@@ -9,6 +9,7 @@ import entities.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.Map;
 import java.util.Scanner;
 
 import static entities.enums.Status.ACTIVE;
@@ -76,7 +77,7 @@ public class Main {
         System.out.print("Password: ");
         String password = scanner.nextLine();
         try {
-            authService.register(username, firstName, lastName, email, password);
+            customer = authService.register(username, firstName, lastName, email, password);
             showMainMenu();
         } catch (Exception e){
             System.out.println("Account already exists for this username.");
@@ -92,19 +93,29 @@ public class Main {
             System.out.println("4. Block / Manage card");
             System.out.println("5. Update personal information");
             System.out.println("6. Create / Close account");
-            System.out.println("7. Exit");
+            System.out.println("7. View Account Details");
+            System.out.println("8. Log off");
 
-            int option = Integer.parseInt(scanner.nextLine());
+            try {
+                int option = Integer.parseInt(scanner.nextLine());
 
-            switch (option) {
-                case 1 -> withdraw();
-                case 2 -> deposit();
-                case 3 -> transfer();
-                case 4 -> manageCard();
-                case 5 -> customerService.updateCustomerInfo(customer);
-                case 6 -> manageAccount();
-                case 7 -> showLoginMenu();
-                default -> System.out.println("Invalid option.");
+                switch (option) {
+                    case 1 -> withdraw();
+                    case 2 -> deposit();
+                    case 3 -> transfer();
+                    case 4 -> manageCard();
+                    case 5 -> customerService.updateCustomerInfo(customer);
+                    case 6 -> manageAccount();
+                    case 7 -> showAccountDetails();
+                    case 8 -> {
+                        System.out.println("Logging off...");
+                        customer = null;
+                        return;
+                    }
+                    default -> System.out.println("Invalid option.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a valid number.");
             }
         }
     }
@@ -284,5 +295,58 @@ public class Main {
             System.out.println("Invalid account.");
         }
         return result;
+    }
+
+    private static void showAccountDetails() {
+        System.out.println("\n--- VIEW ACCOUNT DETAILS ---");
+        System.out.print("Enter Account ID: ");
+
+        try {
+            Long accountId = Long.parseLong(scanner.nextLine());
+
+            if (!checkAccountID(accountId)) {
+                return;
+            }
+
+            Account account = accountService.getAccount(accountId);
+
+            if (account == null) {
+                System.out.println("Account not found (System Error).");
+                return;
+            }
+
+            System.out.println(" Account ID: " + account.getAccountId());
+            System.out.println(" Type:       " + account.getType());
+            System.out.println(" Balance:    " + account.getBalance());
+            System.out.println(" Status:     " + account.getStatus());
+
+            Map<String, Card> accountCards = account.getCards();
+
+            System.out.println(" Linked Cards (" + accountCards.size() + "):");
+
+            if (accountCards.isEmpty()) {
+                System.out.println("No cards attached to this account.");
+            } else {
+                for (Card c : accountCards.values()) {
+                    System.out.println("  ------------------");
+                    System.out.println("  Number: " + c.getCardNumber());
+
+                    if (c instanceof CreditCard) {
+                        System.out.println("  Type:   CREDIT");
+                        System.out.println("  Limit:  " + ((CreditCard) c).getLimit());
+                    } else {
+                        System.out.println("  Type:   DEBIT");
+                    }
+                    String status = (c.getIsBlocked() == Status.CLOSED) ? "BLOCKED" : "ACTIVE";
+                    System.out.println("  Status: " + status);
+                    System.out.println("  Expires:" + c.getExpirationDate());
+                }
+                System.out.println("  ------------------");
+            }
+
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid ID");
+        } catch (Exception e) {
+        }
     }
 }
