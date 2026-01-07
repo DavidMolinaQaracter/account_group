@@ -138,7 +138,7 @@ public class Main {
             System.out.println("Created account with ID " + account.getAccountId());
         } else if (option == 2) {
             System.out.print("Account ID: ");
-            String id = scanner.nextLine();
+            long id = Long.parseLong(scanner.nextLine());
             if (!checkAccountID(id))
                 return;
             accountService.closeAccount(id);
