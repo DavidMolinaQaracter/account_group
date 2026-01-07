@@ -34,7 +34,8 @@ public class TransactionService {
         //Lógica de dinero (Saldo o Sobregiro)
         if (acc.getBalance().compareTo(amount) < 0) {
             if (!creditService.applyOverdraft(accountId)) {
-                saveRecord(acc, amount, Result.FAILURE); // Registro fallo
+                Transaction t = new Transaction(operationCounter++, amount, LocalDateTime.now(), TransactionType.WITHDRAWN, accountId, Result.FAILURE);
+                transactionHistory.put(operationCounter, t);
                 throw new InsufficientFundsException();
             }
         }
