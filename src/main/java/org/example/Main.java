@@ -112,7 +112,7 @@ public class Main {
 
     private static void transfer() {
         System.out.print("From Account ID: ");
-        String from = scanner.nextLine();
+        long from = Long.parseLong(scanner.nextLine());
         if (!checkAccountID(from))
             return;
         System.out.print("To Account ID: ");
