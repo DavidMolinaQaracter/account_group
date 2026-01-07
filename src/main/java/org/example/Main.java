@@ -170,7 +170,7 @@ public class Main {
         System.out.println("3. Manage card.");
         System.out.println("4. Exit.");
 
-        int i = scanner.nextInt();
+        int i = Integer.parseInt(scanner.nextLine());
 
         switch (i) {
             case 1:
